@@ -29,3 +29,15 @@ func TestALStack(t *testing.T) {
 	fmt.Println(stack.Pop())
 	fmt.Println(stack.Pop())
 }
+func TestLLStack(t *testing.T) {
+	var stack Stack = NewLLStack(10)
+	stack.Push(1)
+	stack.Push(5)
+	stack.Push(7)
+	stack.Push(9)
+	fmt.Println(stack.Pop())
+	fmt.Println(stack.Pop())
+	fmt.Println(stack.Pop())
+	fmt.Println(stack.Pop())
+	fmt.Println(stack.Pop())
+}
