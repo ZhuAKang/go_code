@@ -645,6 +645,8 @@ func (heap *AHeap) TopHeap() (int, error) {
 
 ```
 
+**其实 go 的标准库里有堆的接口，在包 container/heap 里，只要实习相应的接口就能够使用了。**
+
 #### 3.4.4 堆排序
 
 堆排序的基本思想是：将待排序序列构造成一个大顶堆，此时，整个序列的最大值就是堆顶的根节点。将其与末尾元素进行交换，此时末尾就为最大值。然后将剩余n-1个元素重新构造成一个堆，这样会得到n个元素的次小值。如此反复执行，便能得到一个有序递增序列了。
@@ -820,7 +822,7 @@ func reshape(data []int, index []int) {
 
 ```
 
-#### 3.7 鸡尾酒排序
+### 3.7 鸡尾酒排序
 
 鸡尾酒排序又称双向冒泡排序、鸡尾酒搅拌排序、搅拌排序、涟漪排序、来回排序或快乐小时排序, 是冒泡排序的一种变形。鸡尾酒排序的原理跟冒泡排序差不多，只不过冒泡排序每一轮的比较都是从左至右依次比较，而鸡尾酒排序则是一轮从左至右比较，下一轮从右至左比较。
 
@@ -864,19 +866,739 @@ func CockTailSort() {
 
 此排序算法的优化可以参考冒泡排序的优化。
 
+### 3.8 梳排序
+
+梳排序（Comb sort）是一种由Wlodzimierz Dobosiewicz于1980年所发明的不稳定排序算法。梳排序是改良自冒泡排序和快速排序，其要旨在于消除乌龟，亦即在数组尾部的小数值，这些数值是造成泡沫排序缓慢的主因。
+
+在冒泡排序中，只比较数组中相邻的二项，即比较的二项的间距（Gap）是1，梳排序提出此间距其实可大于1，改自插入排序的希尔排序同样提出相同观点。梳排序中，开始时的间距设置为数组长度，并在循环中以固定比率递减，**通常递减率设置为1.3**。在一次循环中，梳排序如同泡沫排序一样把数组从首到尾扫描一次，比较及交换两项，不同的是两项的间距不固定于1。如同快速排序和合并排序，梳排序的效率在开始时最佳，接近结束时，即进入泡沫排序时最差。如果间距变得太小时(例如小于10)，改用诸如插入排序或鸡尾酒排序等算法，则可提升整体效能。
+
+![梳排序](img\梳排序.gif)
+
+假设输入为
+
+​				8 4 3 7 6 5 2 1
+目标为将之变成递增排序。 因为输入长度=8，开始时设定间距为8/1.3≒6， 则比较8和2、4和1，并作交换两次。
+
+​				8 4 3 7 6 5  2 1
+​				2  4 3 7 6 5 8  1
+​				2 1 3 7 6 5 8 4
+第二次循环，更新间距为6/1.3≒4。比较2和6、1和5，直至7和4，此循环中只须交换一次。
+
+​				2 1 3  7 6 5 8  4
+​				2 1 3 4 6 5 8 7
+接下来的每次循环，间距依次递减为3 → 2 → 1，
+
+间距=3时，不须交换
+
+​				2 1 3 4 6 5 8 7
+间距=2时，不须交换
+
+​				2 1 3 4 6 5 8 7
+间距h=1时，交换三次
+
+​				2 1 3 4 6 5 8 7
+​				1 2 3 4  6 5 8 7
+​				1 2 3 4 5 6  8 7
+​				1 2 3 4 5 6 7 8
+上例中，共作了六次交换以完成排序。
+
+### 3.9 Introsort (内省排序)
+
+Introsort 是由 David Musser 在1997年设计的排序算法。这个排序算法首先从快速排序开始，当递归深度超过一定深度（深度为排序元素数量的对数值）后转为堆排序。
+
+C++ 的 STL 中 sort 的实现就是用的 introsort ,是对 quicksort 的一种改进，因为 quicksort 在某些情况下会是 N^2 复杂度。
+
+STL的sort算法的优化策略：
+
+1、  数据量大时采用QuickSort，分段递归排序。
+
+2、  一旦分段后的数据量小于某个门槛，为避免Quick Sort的递归调用带来的额外负荷，就改用Insertion Sort。
+
+3、  如果层次过深，还会改用HeapSort
+
+4、  “三点中值”获取好的分割
+
+https://blog.csdn.net/cyningsun/article/details/7547570
+
+https://blog.csdn.net/cyningsun/article/details/7547066?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase
+
+### 3.10 外部排序
+
+之前的算法都是需要先将所有的数据载入内存，然后进行排序。到那时有时候需要排序的数据量非常大，载入内存再进行排序的方法并不实际，所以就需要一些外部排序的方法，使得每次载入一部分数据进行排序，排序完成后再与外部磁盘数据进行交换后再执行排序，以此往复。外部排序因为需要不断地读取磁盘数据，所以一般很慢。
+
+#### **3.10.1 简单算法**
+
+
+
+#### **3.10.2 多路合并**
+
+
+
+#### **3.10.3 多相合并**
+
+
+
+#### **3.10.4 替换选择**
+
+
+
 ## 4、 查找
 
-4.1 符号表
+### 4.1 符号表
 
-4.2 二叉查找树
+符号表也称为字典，是存储一个键值对的数据结构。在 golang 中，主要是有 map 集合担任。同样 ，如果我们自己实现符号表，可以有以下六种实现：
 
-4.3 平衡查找树
+![符号表](img\符号表.jpg)
 
-4.4 散列表
+#### 4.1.1 链表（顺序查找）
 
-4.5 应用
+![链表顺序查找](img\链表顺序查找.jpg)
+
+#### 4.1.2 有序数组的二分查找
+
+有序数组的符号表可以使用两个数组来实现，一个数组用来存 key 值，另一个用来存 value 值，然后插入元素的时候保证 key 值数组是有序的时候就行。
+
+![基于有序数组](img\基于有序数组.jpg)
+
+### 4.2 二叉查找树
+
+已做完，见 dataStructuresAndAlgorithmsInGo(数据结构与算法Go语言实现)。
+
+### 4.3 平衡查找树
+
+已做完，见 dataStructuresAndAlgorithmsInGo(数据结构与算法Go语言实现)。
+
+#### 4.3.1 2-3查找树
+
+2-3树其实就是 **3 阶 B 树**，即每个节点最多有 3 个孩子，最少有两个孩子；每个节点内 key 的个数为 1 或 2 个。之前在datastructure 里面没有好好写 B 树的代码，这里写一下。
+
+如下即为一棵 2-3 树的示例：
+
+![2-3树示意图](img\2-3树示意图.png)
+
+由于其也满足左小右大的规则，所以在 2-3 树上的查找与二分查找十分类似，而且 2-3 树是一棵绝对平衡的树，任意节点到它所有的叶子节点的深度都是相等的。  
+
+2-3 树的插入和调整的操作其实就是 3 阶 B 树的插入操作，此处就不赘述了。
+
+代码我没有继续写，但是写了一点点：
+
+```go
+package tree
+
+// keyNumber 为 B 树的阶数限制
+const keyNumber int = 3
+
+// TTNode 2-3 查找树的节点
+type TTNode struct {
+	// 因为有时候需要分裂结点，所以 keys 切片最多存放三个 key 值
+	// ptrs 切片最多存放 4 个节点指针
+	keys      []int     // 元素值
+	ptrs      []*TTTree // 子节点指针
+	fa        *TTTree   // 父节点
+	eleNumber int       // 此节点的元素个数
+}
+
+// TTTree 2-3 查找树，也就是 3 阶 B 树
+type TTTree struct {
+	root *TTNode
+}
+
+// InitTree 初始化函数，返回一个 TTTree 的指针
+func InitTree() *TTTree {
+	tree := new(TTTree)
+	return tree
+}
+
+```
+
+#### 4.3.2 红黑二叉查找树
+
+红黑树（Red Black Tree） 是一种自平衡二叉查找树，典型的用途是实现关联数组。红黑二叉查找树的基本思想是使用标准的二叉查找树（完全由 2- 节点构成）和一些额外的信息（替换 3- 节点）来表示 2-3 树。
+
+红黑树是每个节点都带有颜色属性的二叉查找树，颜色或红色或黑色。 在二叉查找树强制一般要求以外，对于任何有效的红黑树我们增加了如下的额外要求:
+
+性质1. 节点是红色或黑色。 [3] 
+
+性质2. 根节点是黑色。 
+
+性质3.所有叶子都是黑色。（叶子是NUIL节点） 
+
+性质4. 每个红色节点的两个子节点都是黑色。（从每个叶子到根的所有路径上不能有两个连续的红色节点）
+
+性质5. 从任一节点到其每个叶子的所有路径都包含相同数目的黑色节点。 
+
+这些约束强制了红黑树的关键性质: 从根到叶子的最长的可能路径不多于最短的可能路径的两倍长。结果是这个树大致上是平衡的。因为操作比如插入、删除和查找某个值的最坏情况时间都要求与树的高度成比例，这个在高度上的理论上限允许**红黑树在最坏情况下都是高效的**，而不同于普通的二叉查找树。 
+
+是性质4导致路径上不能有两个连续的红色节点确保了这个结果。**最短的可能路径都是黑色节点，最长的可能路径有交替的红色和黑色节点。**因为根据性质5所有最长的路径都有相同数目的黑色节点，这就表明了**没有路径能多于任何其他路径的两倍长。**
+
+<img src="img\红黑树1.jpg" alt="红黑树1" style="zoom:20%;" />
+
+**红链接，**将两个 2- 节点连接起来构成一个 3- 节点，就像上图 a b之间的那样；黑链接，是 2-3 树中的普通链接。确切的说，是将 3- 节点表示为由一条左斜的红色链接（两个 2- 节点其中之一是另一个的左子节点）相连的两个 2- 节点。所以红黑树有另外一种定义：含有红黑链接并满足下列条件的二叉查找树：
+
+​		1、红链接均为左链接；
+
+​		2、没有任何一个节点同时和两个红链接相连；
+
+​		3、该树是完美黑色平衡的，即任意空链接到根节点的路径上的黑链接数量相同。
+
+满足这样定义的红黑树和相应的 2-3 树是一一对应的。
+
+<img src="img\红黑树2.jpg" alt="红黑树2" style="zoom:20%;" />
+
+<img src="img\红黑树3.jpg" alt="红黑树3" style="zoom:20%;" />
+
+如上图，因为每个节点都只有一个指向自己的链接（来自父节点），所以在节点内部设置一个布尔型变量保存指向自己的链接是什么颜色，我们约定空链接为黑色。
+
+##### 4.3.2.1 红黑树的节点结构
+
+则红黑树的节点结构和常用函数如下：
+
+```go
+package tree
+
+// RED 表示红节点
+const RED bool = true
+
+// BLACK 表示黑节点
+const BLACK bool = false
+
+// RBNode 红黑树的节点结构
+type RBNode struct {
+	key         int     // 键值
+	value       int     // 相关联的值
+	left, right *RBNode // 左右子树
+	N           int     // 这棵子树中的节点总数
+	color       bool    // 由其父节点指向它的链接的颜色
+}
+
+// RBTree 红黑树的结构体
+type RBTree struct {
+	root *RBNode
+}
+
+// isRed 测试一个节点和其父节点之间链接的颜色
+// 是红色就返回 true，黑色就返回false
+func isRed(node *RBNode) bool {
+	if node == nil {
+		return false
+	}
+	return node.color == RED
+}
+
+// size 返回以此节点为子树的节点总数
+func size(node *RBNode) int {
+	if node == nil {
+		return 0
+	}
+	return node.N
+}
+
+// IsEmpty 判断树是否为空
+func (tree *RBTree) IsEmpty() bool {
+	if tree != nil {
+		return size(tree.root) == 0
+	}
+	return true
+}
+
+// Get 根据 key 值获取 value
+func (tree *RBTree) Get(key int) int {
+	if tree.root != nil {
+		return get(tree.root, key)
+	}
+	return 0
+}
+
+// get 根据 key 值获取 value
+func get(node *RBNode, key int) int {
+	if node == nil {
+		return 0
+	}
+	if key < node.key {
+		return get(node.left, key)
+	} else if key > node.key {
+		return get(node.right, key)
+	} else {
+		return node.value
+	}
+}
+
+// Min 求树上最小值
+func (tree *RBTree) Min() int {
+	return min(tree.root).key
+}
+
+// min 求此节点下的最小值
+func min(node *RBNode) *RBNode {
+	if node.left == nil {
+		return node
+	}
+	return min(node.left)
+}
+
+```
+
+##### 4.3.2.2 红黑树的旋转操作
+
+红黑树在执行一些操作的时候可能会出现红色的右链接或者连续的两条红链接，这个时候就要通过一些**旋转的方法来修复**。
+
+<img src="img\红黑树的旋转.jpg" alt="红黑树的旋转" style="zoom:20%;" />
+
+上图左半部分为左旋转，将一个红色的右链接通过旋转变为左链接。上图的右半部分是右旋转，将一个红色的左链接旋转成为一个红色的右链接。
+
+代码如下：
+
+```go
+// rotateLeft 左旋转，将右红链接旋转成为左红链接
+func rotateLeft(node *RBNode) *RBNode {
+	temp := node.right
+	node.right = temp.left
+	temp.left = node
+	temp.color = node.color // 延续上一级链接的颜色
+	node.color = RED
+	temp.N = node.N
+	node.N = 1 + size(node.left) + size(node.right)
+	return temp
+}
+
+// rotateRight 右旋转，将左红链接旋转成为右红链接
+func rotateRight(node *RBNode) *RBNode {
+	temp := node.left
+	node.left = temp.right
+	temp.right = node
+	temp.color = node.color // 延续上一级链接的颜色
+	node.color = RED
+	temp.N = node.N
+	node.N = 1 + size(node.left) + size(node.right)
+	return temp
+}
+
+```
+
+##### 4.3.2.3 红黑树的插入
+
+在红黑树上插入新的键的时候，可以使用旋转操作帮助保证 2-3 树 和红黑树之间的一一对应的关系，即保证：有序性和完美平衡性。同时，插入算法还需要满足另外两个重要的性质：不存在两条连续的红链接和不存在红色的右链接。插入可以有大致几种情况：
+
+1. **向单个 2- 节点中插入新键**
+
+   一棵只含有一个键的红黑树，整个树中就一个节点（2- 节点）。插入另一个键的时候直接搜索然后插入。如果新键小于老键，则会产生一个左红节点，否则会产生一个右红节点，此时就需要进行左旋转。
+
+   <img src="img\红黑树插入1.jpg" alt="红黑树插入1" style="zoom:15%;" />
+
+2. **向树底部的 2- 节点插入新键**
+
+   用和二叉查找树相同的方式向一棵红黑树中插入一个新键，会在树的底部新增一个节点。为了保证有序性，总是使用红链接将新节点和它的父节点相连。如果父节点是一个 2- 节点：如果新节点是父节点的左链接，则不需要旋转改动，父节点直接成为一个 3- 节点；如果新节点是父节点的右链接，则需要一次左旋进行修正。 
+
+   <img src="img\红黑树插入2.jpg" alt="红黑树插入2" style="zoom:15%;" />
+
+3. **向一棵双键树（即只有一个 3- 节点）中插入新键**
+
+   这种插入可以分为三种情况：新键最大、新键处于树中两键之间、新键最小。每种情况对应不同的插入以及旋转策略：
+
+   - 新键最大
+
+     新键最大，按照左小右大的原则，直接插在根节点的右半部分，作为其右孩子即可。由于插入的链接一开始都是红色的，所以再将两条链接变黑，就可以得到一棵由三个节点组成的高度为 2 的平衡树。
+
+   - 新键最小
+
+     新键最小，则其会被链接到最左边的空链接上，这样就产生了两个连续的红链接。此时，只要将上层的红链接执行异步右旋转即可得到第一种情况。
+
+   - 新键处于树中两键之间
+
+     新键介于原来两个键值之间，则插入的时候又会产生两个连续的红链接，一条红色左链接接一条红色右链接，这时只要对最下方的红链接执行一次左旋转即可得到第二种情况。
+
+     <img src="img\红黑树插入3.jpg" alt="红黑树插入3" style="zoom:20%;" />
+
+4. **对上面几种情况的分析**
+
+   从 3 中我们可知，每种情况最后都会遇到一个节点的左右链接均为红链接，所以可以有一个专门的方法 flipColors() 来转换一个节点的两个子节点的颜色。除了将子节点由红变黑之外，还需要将父节点由黑变红。这个操作和旋转操作一样，都是局部变换，不会影响整棵树的黑色平衡性。
+
+   ```go
+   // flipColors 转换一个节点的两个子节点的颜色。
+   // 除了将子节点由红变黑之外，还需要将父节点由黑变红。
+   func flipColors(node *RBNode) {
+   	node.color = RED
+   	node.left.color, node.right.color = BLACK, BLACK
+   }
+   ```
+
+   根据情况总结和**删除的情况总结**：特将上述 flipColors 更新成如下代码：
+
+   ```go
+   // flipColors 转换一个节点的两个子节点的颜色。
+   // 除了将子节点由红变黑之外，还需要将父节点由黑变红。
+   func flipColors(node *RBNode) {
+   	node.color = !node.color
+   	node.left.color, node.right.color = !node.left.color, !node.right.color
+   }
+   ```
+
+   
+
+5. **向树底部的 3- 节点插入新键**
+
+   向树的底部的 3- 节点插入新键，则会出现上面讨论过的三种场景。指向新节点的链接可能是 3- 节点的右链（此时只需要转换颜色即可），或者是左链接（进行右旋再转换颜色），或者中链接（先左旋下层链接，然后右旋上层链接，最后转换颜色）。颜色转换会使中间的节点的链接由黑变红，这就相当于将这个中间节点送入了父节点，即可以认为是在父节点中插入了一个新键，继续使用相同的方法解决即可。
+
+   <img src="img\红黑树插入4.jpg" alt="红黑树插入4" style="zoom:20%;" />
+
+6. **将红链接在树中向上传递**
+
+   2-3 树中的插入算法需要我们分解 3- 节点，将中间的键插入父节点，如此这般直到遇到一个 2- 节点或者是根节点的时候停止。每次旋转之后，都要对颜色进行转换，将中间节点变红。在父节点看来，处理这样一个红色节点的方式和处理一个新插入节点完全相同，即继续把红链接移到中节点上。
+
+   下图就将之前的几种情况进行了总结：
+
+   <img src="D:\go\goProject\src\go_code\视频的笔记\img\红黑树插入5.jpg" alt="红黑树插入5" style="zoom:15%;" />
+
+   总之，谨慎的使用左旋、右旋以及颜色转换这三个简单的操作，就能够保证插入后红黑树和 2-3 树的一一对应的关系。在沿着插入节点到根节点的路径上向上移动是所经过的每个节点完成以下操作，就可以完成插入操作：
+
+   - 如果右子节点是红色而左子节点是黑色，进行左旋；
+   - 如果左子节点是红色且它的左子节点也是红色，则进行右旋；
+   - 如果左右子节点均为红色，则进行颜色转换
+
+7. **实现代码**
+
+   ```go
+   // Insert 向树内插入一个键值对
+   func (tree *RBTree) Insert(key int, value int) {
+   	// 首先找 key 值存不存在，存在更新其值，否则为它新建一个节点
+   	tree.root = put(tree.root, key, value)
+   	// 根节点颜色置为黑
+   	tree.root.color = BLACK
+   }
+   
+   // put 节点的插入函数
+   func put(node *RBNode, key int, value int) *RBNode {
+   	if node == nil {
+   		return &RBNode{key, value, nil, nil, 1, RED}
+   	}
+   	// 比较 key 值和当前节点的 key 值，大了向右找位置，小了向左找位置
+   	// 相等更新当前节点的 value
+   	if key > node.key {
+   		node.right = put(node.right, key, value)
+   	} else if key < node.key {
+   		node.left = put(node.left, key, value)
+   	} else {
+   		node.value = value
+   	}
+   
+   	// 接下来进行颜色的转换
+   	if isRed(node.right) && !isRed(node.left) {
+   		node = rotateLeft(node)
+   	}
+   	if node.left != nil { // node.left.left 这一块可能空指针，判断一下
+   		if isRed(node.left) && isRed(node.left.left) {
+   			node = rotateRight(node)
+   		}
+   	}
+   	if isRed(node.left) && isRed(node.right) {
+   		flipColors(node)
+   	}
+   	node.N = size(node.left) + size(node.right) + 1
+   	return node
+   }
+   ```
+
+##### 4.3.2.4 红黑树的删除最小
+
+因为红黑树也满足二叉搜索树的性质，所以其最小元素也在左半部分。从树的左侧底部删除元素，可以分为两种情况：一种是从树底部的 3- 节点中删除键，这种情况是最简单的，直接删除即可；另外一种是从树底部的 2- 节点中删除，如果删除的话就会留下一个空节点，一般我们会将他们替换为一个空链接。可是此时就破坏了树的完美平衡性。所以我们要这样做：
+
+​	为了保证我们不会删除一个 2- 节点，我们沿着左侧链接向下进行变换，确保当前节点不是 2- 节点（可能是 3- 节点或者临时的 4- 节点）。首先，根节点可能有两种情况：一是根是 2- 节点且两个子节点也都是 2- 节点，则可以直接将这三个节点变成一个 4- 节点；否则我们需要保证根节点的左子节点不是 2- 节点，如果有必要可以从它右侧的兄弟节点“借”一个键来。以上情况如下图：
+
+![红黑树删除最小1](img\红黑树删除最小1.jpg)
+
+在沿着左链接向下的过程中，保证以下情况之一成立：
+
+- 当前节点的左子节点不是 2- 节点，完成；
+
+- 当前节点的左子节点是 2- 节点而它的亲兄弟不是 2- 节点，则将左子节点的兄弟节点中的一个键移到左子节点中；
+
+  <img src="img\红黑树删除最小3.jpg" alt="红黑树删除最小3" style="zoom:20%;" />
+
+- 如果当前节点的左子节点和它的兄弟节点都是 2- 节点，则将左子节点、父节点中的最小值和左子节点最近的兄弟节点合并成一个 4- 节点，使父节点由 3- 节点变成 2- 节点或者由 4- 节点变为 3- 节点。 
+
+  <img src="img\红黑树删除最小2.jpg" alt="红黑树删除最小2" style="zoom:15%;" />
+
+  则上面后两种情况可以总结为以下函数：
+
+  ```go
+  // moveRedLeft 主要实现以下两点：
+  // 当前节点的左右子节点都是2-节点，左右节点需要从父节点中借一个节点
+  // 如果该节点的右节点的左节点是红色节点，说明兄弟节点不是2-节点，可以从兄弟节点中借一个   
+  func moveRedLeft(node *RBNode) *RBNode {
+  	// 从父结点中借一个
+  	flipColors(node)
+  	// 判断兄弟节点，如果是非红节点，也从兄弟节点中借一个
+  	if node.right != nil {
+  		if isRed(node.right.left) {
+  			node.right = rotateRight(node.right)
+  			node = rotateLeft(node)
+  			flipColors(node)
+  		}
+  	}
+  	return node
+  }
+  ```
+
+  
+
+在遍历的过程中执行这个过程，最后能够得到一个含有最小键的 3- 或者 4- 节点，然后直接从中删除，将 3- 变为 2- 或者将 4- 变为 3-节点。然后再回头向上分解临时的 4- 节点。
+
+代码：
+
+```go
+// DeleteMin 删除最小元素的函数入口
+func (tree *RBTree) DeleteMin() error {
+	if tree.root != nil {
+		// 如果根节点的左右子节点是2-节点，我们可以将根设为红节点，这样才能进行后面的 moveRedLeft 操作，因为左子要从根节点借一个
+		if !isRed(tree.root.left) && !isRed(tree.root.right) {
+			tree.root.color = RED
+		}
+		tree.root = deleteMin(tree.root)
+		// 借完以后，我们将根节点的颜色复原
+		if !tree.IsEmpty() {
+			tree.root.color = BLACK
+		}
+		return nil
+	}
+	return errors.New("树为空，不存在最小元素！！！")
+}
+
+// deleteMin 删除最小元素
+func deleteMin(node *RBNode) *RBNode {
+	// 删除
+	if node.left == nil {
+		return nil
+	}
+	// 判断 node 的左节点是不是2-节点（再向坐下递归的过程中，保证之前讨论的那三种情况成立）
+	if !isRed(node.left) && !isRed(node.left.left) {
+		node = moveRedLeft(node)
+	}
+	// 递归
+	node.left = deleteMin(node.left)
+	// 解除临时组成的 4- 节点，更新以此节点的棵子树中的节点总数
+	return balance(node)
+}
+
+// balance 解除临时组成的 4- 节点，更新以此节点的棵子树中的节点总数
+func balance(node *RBNode) *RBNode {
+
+	if isRed(node.right) {
+		node = rotateLeft(node)
+	}
+	// TODO: 下面这个 if 可以去掉吧
+	if isRed(node.right) && !isRed(node.left) {
+		node = rotateLeft(node)
+	}
+	if node.left != nil { // node.left.left 这一块可能空指针，判断一下
+		if isRed(node.left) && isRed(node.left.left) {
+			node = rotateRight(node)
+		}
+	}
+	if isRed(node.left) && isRed(node.right) {
+		flipColors(node)
+	}
+	node.N = size(node.left) + size(node.right) + 1
+	return node
+}
+
+```
+
+##### 4.3.2.5 红黑树删除最大
+
+红黑树删除最大元素的方法思路类似删除最小元素，即在向右链接查找的过程中不断地进行变换操作，使得当前节点均不是 2- 节点。直到查找到最右侧然后删除即可。删除之后再向上回溯分解剩余的 4- 节点。
+
+但是需要注意的是，由于红链接都是左链接，所以这里用到的变换与删除最小键的变换不同。
+
+这里，沿着右子节点向下的过程中，需要保证以下情况之一成立：
+
+- 当前节点的右子节点不是 2- 节点，完成；
+
+- 当前节点的右子节点是 2- 节点，而兄弟节点不是 2- 节点，则从右子节点的兄弟节点那儿移动一个键值到右子节点中；
+
+  <img src="img\红黑树删除最大2.jpg" alt="红黑树删除最大2" style="zoom:15%;" />
+
+- 如果当前节点的右子节点和它的兄的节点都是 2- 节点，则将右子节点、父亲节点中的最大值和右子节点的兄弟节点合并成为一个 4- 节点，使父节点由 3- 节点变成 2- 节点或者由 4- 节点变为 3- 节点。 
+
+  <img src="img\红黑树删除最大1.jpg" alt="红黑树删除最大1" style="zoom:15%;" />
+
+  上面两种情况就总结出了以下函数，与删除最小的类似：
+
+  ```go
+  // moveRedRight 主要实现以下两个功能：
+  // 当前节点的右子节点是 2- 节点，而兄弟节点不是 2- 节点，则从右子节点的兄弟节点那儿移动一个键值到右子节点中
+  // 前节点的右子节点和它的兄的节点都是 2- 节点，则将右子节点、父亲节点中的最大值和右子节点的兄弟节点合并成为一个 4- 节点
+  func moveRedRight(node *RBNode) *RBNode {
+  	// 从父节点中取一个
+  	flipColors(node)
+  	// 判断兄弟节点，如果不是 2- 节点，也从兄弟节点中借一个
+  	if node.left != nil {
+  		if isRed(node.left.left) {
+  			// 从兄弟那儿借来了一个
+  			node = rotateRight(node)
+  			// 从兄弟那儿取来了，那就再还给父节点一个
+  			flipColors(node)
+  		}
+  	}
+  	return node
+  }
+  ```
+
+剩下的就和删除最小类似了，在遍历的过程中执行这个过程，最后能够得到一个含有最小键的 3- 或者 4- 节点，然后直接从中删除，将 3- 变为 2- 或者将 4- 变为 3-节点。然后再回头向上分解临时的 4- 节点。
+
+```go
+// DeleteMax 删除最大元素的函数入口
+func (tree *RBTree) DeleteMax() error {
+	if tree.root != nil {
+		if !isRed(tree.root.left) && !isRed(tree.root.right) {
+			tree.root.color = RED
+		}
+		tree.root = deleteMax(tree.root)
+		if !tree.IsEmpty() {
+			tree.root.color = BLACK
+		}
+		return nil
+	}
+	return errors.New("树为空，不存在最大元素！！！")
+}
+
+// deleteMax 删除最大元素
+func deleteMax(node *RBNode) *RBNode {
+	if isRed(node.left) {
+		node = rotateRight(node)
+	}
+	if node.right == nil {
+		return nil
+	}
+    // 右侧节点是 2- 节点，则在递归的时候需要执行 moveRedRight 使其满足之前说的三种情况之一
+	if !isRed(node.right) && !isRed(node.right.left) {
+		node = moveRedRight(node)
+	}
+	node.right = deleteMax(node.right)
+	return balance(node)
+}
+
+```
 
 
+
+##### 4.3.2.6 红黑树删除
+
+**在查找路径上进行和删除最小键相同的变换操作**，同样可以**保证在被查找的过程中任意的当前节点均不是 2- 节点。**如果被查找的键在树的底部，我们可以直接删除它。如果不在底部，我们需要**将他和他的后继进行交换**，就和二叉查找树一样。因为当前节点必然不是 2- 节点，问题已经转化为在一棵节点不是 2- 节点的子树中删除最小键，我们可以直接使用之前的算法。和以前一样，删除之后我们需要向上回溯并分解剩余的 4- 节点。
+
+代码：
+
+```go
+// Delete 删除函数，删除树上指定的 key
+func (tree *RBTree) Delete(key int) error {
+	if tree.root != nil {
+		if !isRed(tree.root.left) && !isRed(tree.root.right) {
+			tree.root.color = RED
+		}
+		tree.root = deleteKey(tree.root, key)
+		if !tree.IsEmpty() {
+			tree.root.color = BLACK
+		}
+		return nil
+	}
+	return errors.New("树为空，不存在最大元素！！！")
+}
+
+// deleteKey 删除树上指定的 key 值
+func deleteKey(node *RBNode, key int) *RBNode {
+	// 比较小，向左找
+	if key < node.key {
+		// 每当向左进行移动的时候，一定要将当前节点转换成一个非 2- 节点
+		// 也就是每次向左走都要执行前面删除最小时候向左的转换 moveRedLeft
+		// 删除
+		if node.left == nil {
+			return nil
+		}
+		// 判断 node 的左节点是不是2-节点（再向左下递归的过程中，保证之前讨论的那三种情况成立）
+		if !isRed(node.left) && !isRed(node.left.left) {
+			node = moveRedLeft(node)
+		}
+		// 递归
+		node.left = deleteKey(node.left, key)
+	} else {
+		// 同样，如果需要向右走或者删除当前节点（删除当前节点需要取后继）
+		// 也需要执行前面删除最大的时候向右的变换，使其当前节点不是 2- 节点
+		if isRed(node.left) {
+			node = rotateRight(node)
+		}
+        // 	这里和向右的那个有一点点区别就是，当前节点可能 key 值等于要删除的 key，所以退出的判断条件要多加一个
+		if node.right == nil && key != node.key{ // 没有找到目标键，可以退出了
+			return nil
+		}
+		// 右侧节点是 2- 节点，则在递归的时候需要执行 moveRedRight 使其满足之前说的三种情况之一
+		if !isRed(node.right) && !isRed(node.right.left) {
+			node = moveRedRight(node)
+		}
+
+		// 上面对节点的变换完成了，下面就开始删除
+		if key == node.key {
+			// 取右侧最小（后继）填入当前节点
+			node.value = get(node.right, min(node.right).key)
+			node.key = min(node.right).key
+			// 再删除右侧最小的（后继）
+			node.right = deleteMin(node.right)
+		} else {
+			// 这是当前节点值还是小于 key 值，继续向右找
+			node.right = deleteKey(node.right, key)
+		}
+	}
+	return balance(node)
+}
+```
+
+##### 4.3.2.7 红黑树的其他操作
+
+由于红黑树具有二叉查找树的性质，所以二叉查找树的查找最大、最小键值、select()、rank()、floor()、ceiling() 和范围查找方法不做任何变动即可继续使用，这些操作不会涉及节点颜色，也就不会影响红黑树的完美平衡性。上述的这些方法详见二叉查找树。
+
+### 4.4 散列表
+
+#### 4.4.1 散列表的含义
+
+散列表是根据关键码值(Key value)而直接进行访问的数据结构，通过把关键码值映射到表中一个位置来访问记录，以加快查找的速度。这个映射函数叫做散列函数，存放记录的数组叫做散列表。
+
+若关键字为k，则其值存放在f(k)的存储位置上。由此，不需比较便可直接取得所查记录。称这个对应关系f为散列函数，按这个思想建立的表为散列表。对不同的关键字可能得到同一散列地址，即k1≠k2，而f(k1)=f(k2)，这种现象称为**冲突**（英语：Collision）。具有相同函数值的关键字对该散列函数来说称做同义词。
+
+因此，散列表的查找算法分为两步：第一步，使用散列函数将被查找的键转换为数组的一个索引。第二步，处理冲突。理想情况下不同的键都能转换为不同的索引值，但是现实是残酷的。除非使用一个范围和键值范围一样大的数组去存储，让键值放在对应的数组位置从而不会产生冲突。但是这种方法内存的占用太高了。所以，**散列表是算法在时间和空间上进行权衡**的经典案例。
+
+要为一个数据类型实现一个优秀的散列方法，需要满足以下几个条件：
+
+- 一致性----等价的键必然产生相同的散列值；
+- 高效性----计算简便；
+- 均匀性----均匀的散列所有的键
+
+处理冲突碰撞的方法有：拉链法、线性探测法。
+
+#### 4.4.2 基于拉链法的散列表
+
+处理两个或者多个键的散列值相同的情况，最直接的就是拉链法：将大小为 M 的数组中的每个元素指向一条链表，链表中的每个节点都存储了散列值为该元素的所有的键值对。
+
+<img src="img\拉链法.png" alt="拉链法" style="zoom:85%;" />
+
+#### 4.4.3 基于线性探查法的散列表
+
+实现散列表的另一种方式就是使用大小为 M 的数组保存 N 个键值，其中 M > N 。我们需要依靠数组中的空位来解决冲突碰撞。基于这种策略的所有方法统称为**开放地址散列表**。
+
+开放地址散列表中最简单的就是线性探查法。当碰撞发生的时候（一个键的散列值已经被另一个不同的键占用的时候），去检查散列表中的下一个位置（将索引值加 1 ），这样的线性探测可能会产生三种结果：
+
+- 命中，该位置的键和被查找的键相同；
+- 未命中，键为空（该位置没有键）；
+- 继续查找，该位置的键和被查找的键不同。
+
+#### 4.4.4 go 中的散列表
+
+map 结构。详见golang基础.md
+
+
+
+## 5、图
+
+
+
+## 6、字符串
 
 
 
